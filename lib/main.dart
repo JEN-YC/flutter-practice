@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
-import 'gamePage.dart';
-void main() => runApp(MyApp());
+import 'package:flutter_app/blocObserver.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'game/gamePage.dart';
 
+void main() {
+  Bloc.observer = SimpleBlocObserver();
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -16,6 +21,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-
-
