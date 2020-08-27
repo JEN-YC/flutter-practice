@@ -10,6 +10,7 @@ class GamePage extends StatefulWidget {
 
 class _GamePageState extends State<GamePage> {
   GameBloc _gameBloc;
+
   @override
   void initState() {
     _gameBloc = new GameBloc();
@@ -18,8 +19,8 @@ class _GamePageState extends State<GamePage> {
 
   @override
   Widget build(BuildContext context) {
-    BuildContext _context = context;
     return BlocProvider(
+      lazy: false,
       create: (_) => _gameBloc,
       child: Scaffold(
         appBar: AppBar(
@@ -89,23 +90,18 @@ class BoxContainer extends StatelessWidget {
           primary: false,
           crossAxisCount: 3,
           children: List.generate(9, (index) {
-            return Box(index, board[index]);
+            return Box(index, context.bloc<GameBloc>().state.board[index]);
           }),
         )));
   }
 }
 
-class Box extends StatefulWidget {
+class Box extends StatelessWidget {
   final int index;
   final String mark;
   Box(this.index, this.mark);
   @override
-  _BoxState createState() => _BoxState();
-}
-
-class _BoxState extends State<Box> {
-  @override
-  Widget build(context) {
+  Widget build(BuildContext context) {
     return MaterialButton(
         padding: EdgeInsets.all(0),
         child: Container(
@@ -114,26 +110,20 @@ class _BoxState extends State<Box> {
                 border: new Border.all(color: Colors.blue)),
             child: Center(
               child: Text(
-                widget.mark.toUpperCase(),
+                mark.toUpperCase(),
                 style: TextStyle(
                   fontSize: 45,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             )),
-        onPressed: () =>
-            context.bloc<GameBloc>().add(UserChooseEvent(widget.index)));
+        onPressed: () => context.bloc<GameBloc>().add(UserChooseEvent(index)));
   }
 }
 
-class Status extends StatefulWidget {
+class Status extends StatelessWidget {
   final String text;
   Status(this.text);
-  @override
-  _StatusState createState() => _StatusState();
-}
-
-class _StatusState extends State<Status> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -144,7 +134,7 @@ class _StatusState extends State<Status> {
           height: 60,
           padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
           child: Text(
-            widget.text,
+            text,
             style: TextStyle(
               fontSize: 30,
             ),
