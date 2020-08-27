@@ -26,33 +26,42 @@ class _GamePageState extends State<GamePage> {
         appBar: AppBar(
           title: Text('Tic-Tac-Toe'),
         ),
-        body: BlocBuilder<GameBloc, GameState>(builder: (context, state) {
-          String statusText;
-          if (state is GameInitState) {
-            statusText = "Next turn ";
-            statusText += state.isNextPlayerO ? "O" : "X";
-          } else if (state is GamePlayingState) {
-            statusText = "Next turn ";
-            statusText += state.isNextPlayerO ? "O" : "X";
-          } else if (state is GameEndWithWinnerState) {
-            statusText = "Winner is ";
-            statusText += state.isWinnerO ? "O" : "X";
-          } else {
-            statusText = "Tie Game";
-          }
-          return Container(
-            decoration: BoxDecoration(color: Colors.amber),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Status(statusText),
-                  BoxContainer(state.board)
-                ],
+        body: BlocConsumer<GameBloc, GameState>(
+          listener: (context, state) async {
+            if(state is GameEndWithWinnerState || state is GameEndWithoutWinnerState){
+              bool restart = await _showAlertBox(context, 'New Game?',
+                  'Want to start a new game?', 'No', 'Yes');
+              if (restart) _gameBloc.add(ResetEvent());
+            }
+          },
+          builder: (context, state) {
+            String statusText;
+            if (state is GameInitState) {
+              statusText = "Next turn ";
+              statusText += state.isNextPlayerO ? "O" : "X";
+            } else if (state is GamePlayingState) {
+              statusText = "Next turn ";
+              statusText += state.isNextPlayerO ? "O" : "X";
+            } else if (state is GameEndWithWinnerState) {
+              statusText = "Winner is ";
+              statusText += state.isWinnerO ? "O" : "X";
+            } else {
+              statusText = "Tie Game";
+            }
+            return Container(
+              decoration: BoxDecoration(color: Colors.amber),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Status(statusText),
+                    BoxContainer(state.board)
+                  ],
+                ),
               ),
-            ),
-          );
-        }),
+            );
+          },
+        ),
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
             bool reset = await _showAlertBox(context, 'Reset?',
