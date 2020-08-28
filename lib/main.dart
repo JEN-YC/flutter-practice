@@ -1,23 +1,61 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/blocObserver.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'game/gamePage.dart';
+import 'authentication/authentication_bloc.dart';
+import 'firebase/user_repository.dart';
+import 'game/game_page.dart';
+import 'login/login_page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   Bloc.observer = SimpleBlocObserver();
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final UserRepository _userRepository = UserRepository();
+  AuthenticationBloc _authenticationBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _authenticationBloc = AuthenticationBloc(userRepository: _userRepository);
+    awaitThreeSeconds();
+  }
+
+  void awaitThreeSeconds() async {
+    await Future.delayed(Duration(seconds: 3));
+    _authenticationBloc.add(AppStartedEvent());
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Hello Flutter',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: GamePage(),
-      debugShowCheckedModeBanner: false,
-    );
+    return BlocProvider(
+        create: (BuildContext context) => _authenticationBloc,
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
+            builder: (context, state) {
+              if (state is AuthenticatedState)
+                return GamePage();
+              else if (state is UnauthenticatedState)
+                return LoginPage(
+                  userRepository: _userRepository,
+                );
+              return Container(
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            },
+          ),
+        ));
   }
 }
