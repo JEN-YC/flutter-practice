@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/firebase/user_repository.dart';
 import 'package:flutter_app/game/game_page.dart';
 import 'package:flutter_app/home/side_drawer.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';

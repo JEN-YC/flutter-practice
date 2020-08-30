@@ -4,6 +4,7 @@ import 'package:flutter_app/firebase/user_repository.dart';
 import 'package:flutter_app/signup/signup_page.dart';
 import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'login_bloc.dart';
 
@@ -22,6 +23,8 @@ class _LoginFormState extends State<LoginForm> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   LoginBloc _loginBloc;
+  SharedPreferences sharedPreferences;
+  bool _rememberAccount;
 
   UserRepository get _userRepository => widget._userRepository;
   bool get isPopulated =>
@@ -32,8 +35,14 @@ class _LoginFormState extends State<LoginForm> {
   @override
   void initState() {
     _loginBloc = BlocProvider.of<LoginBloc>(context);
+
     _emailController.addListener(_onEmailChanged);
     _passwordController.addListener(_onPasswordChanged);
+    SharedPreferences.getInstance().then((prefs) {
+      sharedPreferences = prefs;
+      _loadCheckbox();
+      _loadAccount();
+    });
     super.initState();
   }
 
@@ -65,6 +74,7 @@ class _LoginFormState extends State<LoginForm> {
             )));
         }
         if (state.isSuccess) {
+          if (_rememberAccount) _saveAccount(_emailController.text);
           BlocProvider.of<AuthenticationBloc>(context).add(LoggedInEvent());
         }
       },
@@ -101,6 +111,17 @@ class _LoginFormState extends State<LoginForm> {
                     validator: (_) {
                       return !state.isPasswordValid ? 'Invalid Password' : null;
                     },
+                  ),
+                  CheckboxListTile(
+                    value: _rememberAccount ?? false,
+                    onChanged: (value) {
+                      setState(() {
+                        _rememberAccount = value;
+                      });
+                      _saveCheckout(value);
+                    },
+                    title: Text('記住我的帳號'),
+                    controlAffinity: ListTileControlAffinity.leading,
                   ),
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: 20.0),
@@ -144,6 +165,30 @@ class _LoginFormState extends State<LoginForm> {
   void _onFormSubmitted() {
     _loginBloc.add(LoginWithCredentialsPressed(
         email: _emailController.text, password: _passwordController.text));
+  }
+
+  _loadCheckbox() async {
+    print("load checkout");
+    print(sharedPreferences.getBool('remember_account'));
+    setState(() {
+      _rememberAccount = sharedPreferences.getBool('remember_account') ?? false;
+    });
+  }
+
+  _saveCheckout(value) async {
+    print("save checkout");
+
+    await sharedPreferences.setBool('remember_account', value);
+  }
+
+  _loadAccount() async {
+    setState(() {
+      _emailController.text = sharedPreferences.getString('account') ?? "";
+    });
+  }
+
+  _saveAccount(account) async {
+    await sharedPreferences.setString('account', account);
   }
 }
 
