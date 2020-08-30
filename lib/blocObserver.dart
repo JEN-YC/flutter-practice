@@ -9,7 +9,6 @@ class SimpleBlocObserver extends BlocObserver {
 
   @override
   void onChange(Cubit cubit, Change change) {
-    print(change);
     super.onChange(cubit, change);
   }
 

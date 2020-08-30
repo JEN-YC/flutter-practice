@@ -35,8 +35,9 @@ class AuthenticationBloc
       if (isSigned) {
         final User user = _userRepository.getUser();
         yield AuthenticatedState(user: user);
+      } else {
+        yield UnauthenticatedState();
       }
-      yield UnauthenticatedState();
     } catch (_) {
       yield UnauthenticatedState();
     }

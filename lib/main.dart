@@ -2,6 +2,7 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/blocObserver.dart';
+import 'package:flutter_app/home/home_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'authentication/authentication_bloc.dart';
 import 'firebase/user_repository.dart';
@@ -45,7 +46,9 @@ class _MyAppState extends State<MyApp> {
           home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
             builder: (context, state) {
               if (state is AuthenticatedState)
-                return GamePage();
+                return HomePage(
+                  user: state.user,
+                );
               else if (state is UnauthenticatedState)
                 return LoginPage(
                   userRepository: _userRepository,
