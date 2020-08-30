@@ -1,3 +1,4 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/blocObserver.dart';
@@ -31,7 +32,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   void awaitThreeSeconds() async {
-    await Future.delayed(Duration(seconds: 3));
+    await Future.delayed(Duration(seconds: 5));
     _authenticationBloc.add(AppStartedEvent());
   }
 
@@ -49,10 +50,20 @@ class _MyAppState extends State<MyApp> {
                 return LoginPage(
                   userRepository: _userRepository,
                 );
-              return Container(
+              return Material(
                 child: Center(
-                  child: CircularProgressIndicator(),
-                ),
+                    child: SizedBox(
+                        width: 300.0,
+                        child: TextLiquidFill(
+                          text: 'Flutter',
+                          waveColor: Colors.blueAccent,
+                          boxBackgroundColor: Colors.red,
+                          loadDuration: Duration(seconds: 4),
+                          textStyle: TextStyle(
+                            fontSize: 50.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ))),
               );
             },
           ),
