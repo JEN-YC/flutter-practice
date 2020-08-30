@@ -36,7 +36,9 @@ class AuthenticationBloc
         final User user = _userRepository.getUser();
         yield AuthenticatedState(user: user);
       }
-      yield UnauthenticatedState();
+      else {
+        yield UnauthenticatedState();
+      }
     } catch (_) {
       yield UnauthenticatedState();
     }
