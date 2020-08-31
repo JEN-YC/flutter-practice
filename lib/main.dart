@@ -6,7 +6,6 @@ import 'package:flutter_app/home/home_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'authentication/authentication_bloc.dart';
 import 'firebase/user_repository.dart';
-import 'game/game_page.dart';
 import 'login/login_page.dart';
 
 void main() async {
